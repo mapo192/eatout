@@ -416,6 +416,9 @@
   <a href="#" id="shareLink2" style="color:var(--persimmon);font-weight:700"></a>
   <span id="restoreWrap" style="display:none"></span>
   <input type="file" id="importFile" accept="application/json,.json" style="display:none">
+  <div id="visitWrap" style="margin-top:12px;font-size:12.5px;color:var(--ink-soft)">
+    👣 방문자 <b id="visitCount" style="color:var(--soy);font-weight:800">—</b>
+  </div>
 </footer>
 
 <!-- Register modal -->
@@ -1144,6 +1147,36 @@ async function init(){
   // 'newest' 정렬 안정화를 위해 _t 기본값 보정
   RECORDS.forEach(d=>{ if(d._t==null) d._t=0; });
   buildSectionFilters(); buildCatFilters(); render();
+  initVisitorCounter();
+}
+
+/* ============ 방문자 카운터 ============ */
+// Supabase: counters 테이블 + bump_visits() RPC (supabase/counter.sql 실행 필요)
+// 로컬 모드: 이 브라우저 기준 카운트. 증가는 세션당 1회.
+async function initVisitorCounter(){
+  const el=$("#visitCount"); if(!el) return;
+  const fmt=n=>Number(n).toLocaleString('ko-KR');
+  const c=window.APP_CONFIG||{};
+  if(c.provider==="supabase" && c.supabase && c.supabase.url && c.supabase.anonKey){
+    const base=c.supabase.url.replace(/\/+$/,""), key=c.supabase.anonKey;
+    const H={ apikey:key, Authorization:"Bearer "+key, "Content-Type":"application/json" };
+    try{
+      let count=null;
+      // 매 방문마다 +1
+      const r=await fetch(base+"/rest/v1/rpc/bump_visits",{method:"POST",headers:H,body:"{}"});
+      if(r.ok){ count=await r.json(); }
+      if(count==null){
+        const r2=await fetch(base+"/rest/v1/counters?select=count&key=eq.visits",{headers:H});
+        if(r2.ok){ const rows=await r2.json(); count=rows[0]&&rows[0].count; }
+      }
+      el.textContent = count!=null ? fmt(count)+"명" : "—";
+    }catch(e){ el.textContent="—"; }
+    return;
+  }
+  // 로컬 폴백 (이 브라우저) — 매 방문마다 +1
+  let n=+(localStorage.getItem('rn-visit-count')||0) + 1;
+  try{ localStorage.setItem('rn-visit-count',n); }catch(e){}
+  el.textContent=fmt(n)+"명";
 }
 init();
 </script>
