@@ -94,8 +94,12 @@
       return (await res.json()).map(r => this._rowToRec(r));
     }
     async create(rec){
-      const body = { data: this._recToData(rec) };
-      if(rec.id) body.id = rec.id;
+      // id/updated_at 를 명시적으로 채워 컬럼 default 유무와 무관하게 INSERT 되도록 함
+      const body = {
+        id: rec.id || genId(),
+        data: this._recToData(rec),
+        updated_at: new Date().toISOString()
+      };
       const res = await fetch(`${this.url}/rest/v1/${this.table}`, {
         method: "POST",
         headers: { ...this._headers(true), Prefer: "return=representation" },
@@ -122,6 +126,11 @@
         headers: { ...this._headers(true), Prefer: "return=representation" }
       });
       if(!res.ok) throw await this._err(res);
+      // 비밀번호가 틀리면 RLS로 0건 삭제되고 200이 온다 → 삭제된 행이 없으면 오류로 처리
+      const rows = await res.json().catch(() => []);
+      if(Array.isArray(rows) && rows.length === 0){
+        const e = new Error("삭제 실패 (비밀번호 또는 권한 없음)"); e.status = 403; throw e;
+      }
     }
     async resetToSeed(){ throw new Error("Supabase 모드에서는 seed.sql 로 초기화하세요"); }
     get needsPassword(){ return true; }
