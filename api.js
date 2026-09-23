@@ -62,6 +62,7 @@
     }
     async remove(id){ this._save(this._load().filter(x => x.id !== id)); }
     async resetToSeed(){ const seed = seedFromBase(); this._save(seed); return seed; }
+    async verifyPassword(){ return true; }   // 로컬 모드는 비밀번호 없음
     get needsPassword(){ return false; }
     get mode(){ return this.storageOK ? "로컬 저장" : "임시(저장 불가)"; }
   }
@@ -89,9 +90,20 @@
       e.status = res.status; return e;
     }
     async list(){
-      const res = await fetch(`${this.url}/rest/v1/${this.table}?select=id,data,updated_at`, { headers: this._headers(false) });
+      // 로그인(비밀번호 설정) 상태면 헤더를 함께 보냄 → 서버가 숨김 식당을 관리자에게만 내려줄 수 있음
+      const res = await fetch(`${this.url}/rest/v1/${this.table}?select=id,data,updated_at`, { headers: this._headers(true) });
       if(!res.ok) throw await this._err(res);
       return (await res.json()).map(r => this._rowToRec(r));
+    }
+    // 관리자 로그인용: 비밀번호가 서버 값과 일치하는지 확인 (true/false)
+    async verifyPassword(pw){
+      const res = await fetch(`${this.url}/rest/v1/rpc/has_write_access`, {
+        method: "POST",
+        headers: { apikey: this.anon, Authorization: "Bearer " + this.anon, "Content-Type": "application/json", "x-write-password": pw },
+        body: "{}"
+      });
+      if(!res.ok) throw await this._err(res);
+      return (await res.json()) === true;
     }
     async create(rec){
       // id/updated_at 를 명시적으로 채워 컬럼 default 유무와 무관하게 INSERT 되도록 함

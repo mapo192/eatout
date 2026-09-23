@@ -375,7 +375,6 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>
         <span class="full">공유</span>
       </button>
-      <button class="btn" id="addBtn"><span class="full">＋ 새 식당 등록</span><span class="mini">＋ 등록</span></button>
     </div>
     <div class="filter-panel" id="filterPanel">
       <div class="filterrow" id="sectionFilters"></div>
@@ -409,7 +408,7 @@
   <div class="list" id="grid"></div>
   <div class="empty" id="empty" style="display:none">
     <b>조건에 맞는 식당이 없어요</b>
-    검색어나 필터를 바꿔보거나, 새 식당을 등록해 목록을 채워주세요.
+    검색어나 필터를 바꿔보세요.
   </div>
 </main>
 
@@ -418,84 +417,13 @@
   제작자 : 김선진( 
   <a href="mailto:hofangman@gmail.com" style="color:var(--persimmon);font-weight:700">hofangman@gmail.com</a> )
   <a href="#" id="exportLink" style="color:var(--persimmon);font-weight:700"></a>
-  <a href="#" id="importLink" style="color:var(--persimmon);font-weight:700"></a>
   <a href="#" id="shareLink2" style="color:var(--persimmon);font-weight:700"></a>
   <span id="restoreWrap" style="display:none"></span>
-  <input type="file" id="importFile" accept="application/json,.json" style="display:none">
   <div id="visitWrap" style="margin-top:12px;font-size:12.5px;color:var(--ink-soft)">
     👣 방문자 <b id="visitCount" style="color:var(--soy);font-weight:800">—</b>
+    · <a href="admin.html" style="color:var(--ink-soft);text-decoration:none">관리자</a>
   </div>
 </footer>
-
-<!-- Register modal -->
-<div class="overlay" id="overlay">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <div class="modal-head">
-      <h2 id="modalTitle">새 식당 등록</h2>
-      <button class="x" id="closeModal" aria-label="닫기">×</button>
-    </div>
-    <div class="modal-body">
-      <div class="field">
-        <label>식당 이름 <span class="req">*</span></label>
-        <input id="f_name" type="text" placeholder="예) 마포양지설렁탕" maxlength="40">
-      </div>
-      <div class="grid2">
-        <div class="field">
-          <label>분류 (구역) <span class="req">*</span></label>
-          <select id="f_section"></select>
-        </div>
-        <div class="field">
-          <label>종류</label>
-          <input id="f_catmajor" type="text" placeholder="예) 한식, 카페" list="catlist" maxlength="12">
-          <datalist id="catlist"></datalist>
-        </div>
-      </div>
-      <div class="grid2">
-        <div class="field">
-          <label>세부/오픈시간</label>
-          <input id="f_catminor" type="text" placeholder="예) 국밥" maxlength="16">
-        </div>
-        <div class="field">
-          <label>주 메뉴</label>
-          <input id="f_menu" type="text" placeholder="예) 설렁탕, 내장탕" maxlength="60">
-        </div>
-      </div>
-      <div class="field">
-        <label>지도 링크 (네이버 등)</label>
-        <input id="f_mapurl" type="url" placeholder="https://naver.me/…">
-      </div>
-      <div class="field">
-        <label>위치 설명</label>
-        <input id="f_mapdesc" type="text" placeholder="예) S-OIL 뒷편(먹자골목)" maxlength="40">
-      </div>
-      <div class="field">
-        <label>식권 사용</label>
-        <div class="checkrow">
-          <label class="check"><input type="radio" name="vch" value="ok" checked> 됨</label>
-          <label class="check"><input type="radio" name="vch" value="no"> 안 됨</label>
-          <input id="f_vnote" type="text" placeholder="비고 (예: 비플식권, 제로페이)" style="flex:1;min-width:140px" maxlength="40">
-        </div>
-      </div>
-      <div class="field">
-        <label>별점 (실제 방문)</label>
-        <div class="starpick" id="starpick">
-          <span class="s" data-v="1">★</span><span class="s" data-v="2">★</span><span class="s" data-v="3">★</span><span class="s" data-v="4">★</span><span class="s" data-v="5">★</span>
-          <span class="clr" id="starClr">지우기</span>
-        </div>
-      </div>
-      <div class="field">
-        <label>후기 / 메모</label>
-        <textarea id="f_review" placeholder="좌석, 맛, 추천 메뉴, 방문 팁 등 자유롭게" maxlength="400"></textarea>
-      </div>
-      <label class="check"><input type="checkbox" id="f_fav"> ⭐ 단골집으로 표시</label>
-      <div class="err" id="formErr"></div>
-      <div class="modal-foot">
-        <button class="btn ghost" id="cancelBtn">취소</button>
-        <button class="btn" id="saveBtn">등록하기</button>
-      </div>
-    </div>
-  </div>
-</div>
 
 <!-- Share modal -->
 <div class="overlay" id="shareOverlay">
@@ -538,124 +466,24 @@
   </div>
 </div>
 
-<!-- Password modal (공유 비밀번호) -->
-<div class="overlay" id="pwOverlay">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="pwTitle" style="max-width:400px">
-    <div class="modal-head">
-      <h2 id="pwTitle">공유 비밀번호</h2>
-      <button class="x" id="pwClose" aria-label="닫기">×</button>
-    </div>
-    <div class="modal-body">
-      <div class="field">
-        <label>수정하려면 공유 비밀번호를 입력하세요</label>
-        <input id="pwInput" type="password" autocomplete="current-password" placeholder="비밀번호">
-      </div>
-      <div class="err" id="pwErr"></div>
-      <div class="modal-foot">
-        <button class="btn ghost" id="pwCancel">취소</button>
-        <button class="btn" id="pwOk">확인</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 <div class="toast" id="toast"></div>
 
 <script src="restaurant-data.js"></script>
 <script src="config.js"></script>
 <script src="api.js"></script>
+<script src="shared.js"></script>
 <script>
 /* ============ DATA ============ */
 // BASE_DATA is loaded from restaurant-data.js (separated into its own file).
-const SECTIONS = ["식당 (반경 ~200m)","식당 (반경 ~500m)","저녁 (for 회식)","카페&베이커리, 테이크아웃 등","대접하기 좋은 식당"];
-const SECTION_SHORT = {
-  "식당 (반경 ~200m)":"반경 200m",
-  "식당 (반경 ~500m)":"반경 500m",
-  "저녁 (for 회식)":"회식·저녁",
-  "카페&베이커리, 테이크아웃 등":"카페·베이커리",
-  "대접하기 좋은 식당":"대접하기 좋은"
-};
+// SECTIONS · 지역 분류 · 식권 아이콘 · isHidden 은 shared.js 에 있음 (관리자 화면과 공용)
+// 이 화면은 조회 전용. 등록/수정/삭제/숨김은 관리자 화면(admin.html)에서 한다.
 /* ============ DATA SOURCE (config.js/api.js 로 결정: local ↔ supabase) ============ */
 const ds = makeDataSource();
-let RECORDS = [];                         // 메모리 캐시 (화면은 여기서 렌더)
+let RECORDS = [];                         // 메모리 캐시 (화면은 여기서 렌더, 숨김 제외)
 function allData(){ return RECORDS; }
-function findEntry(id){ return RECORDS.find(d=>d.id===id); }
-function applyUpdated(rec){ const i=RECORDS.findIndex(x=>x.id===rec.id); if(i>=0) RECORDS[i]=rec; else RECORDS.push(rec); }
-
-/* ---- 쓰기 권한(공유 비밀번호) ---- */
-const PW_KEY = "restaurant-write-pw";
-let writePw = null;
-if(ds.needsPassword){
-  try{ writePw = localStorage.getItem(PW_KEY) || null; }catch(e){}
-  if(writePw) ds.setPassword(writePw);
-}
-// 마스킹되는 비밀번호 입력 모달 (prompt 대체)
-let pwResolver=null;
-function askPassword(){
-  return new Promise(resolve=>{
-    pwResolver=resolve;
-    $("#pwInput").value=""; $("#pwErr").textContent="";
-    $("#pwOverlay").classList.add("open");
-    document.body.style.overflow="hidden";
-    setTimeout(()=>$("#pwInput").focus(),50);
-  });
-}
-function closePw(val){
-  $("#pwOverlay").classList.remove("open");
-  document.body.style.overflow="";
-  const r=pwResolver; pwResolver=null;
-  if(r) r(val);
-}
-async function ensureWritable(){
-  if(!ds.needsPassword) return true;
-  if(writePw) return true;
-  const p = await askPassword();
-  if(!p) return false;
-  writePw = p; ds.setPassword(p);
-  try{ localStorage.setItem(PW_KEY, p); }catch(e){}
-  return true;
-}
-function forgetPassword(){ writePw=null; if(ds.setPassword) ds.setPassword(null); try{ localStorage.removeItem(PW_KEY); }catch(e){} }
-function handleWriteError(e){
-  const msg = String((e&&e.message)||e);
-  if(e && (e.status===401 || e.status===403 || /permission|policy|권한/i.test(msg))){
-    forgetPassword();
-    toast("비밀번호가 틀렸거나 권한이 없습니다. 다시 시도하세요.");
-  } else {
-    toast("실패: " + msg);
-  }
-}
 
 /* ============ STATE ============ */
 const state = { q:"", section:"all", cat:"all", tgl:{fav:false,voucher:false,scored:false}, sort:"default" };
-
-/* ============ LOCATION GROUPS (위치 설명 → 지역 타이틀) ============ */
-// 표시 순서. "위치 미기재"는 항상 마지막에 붙인다.
-const LOCATION_ORDER = [
-  "S-OIL 뒷편 먹자골목","효성해링턴스퀘어","삼창프라자","재화스퀘어","공덕역·마포역 주변",
-  "공덕 이마트 옆","롯데캐슬(공덕역 2번출구)","서부지법 주변","공덕시장", "기타"
-];
-function locGroupOf(d){
-  const t=((d.map&&d.map.desc)||"").trim();
-  if(!t) return "위치 미기재";
-  if(/먹자골목|S-?OIL/i.test(t)) return "S-OIL 뒷편 먹자골목";
-  if(/공덕시장/.test(t))         return "공덕시장";
-  if(/효성|해링턴/.test(t))      return "효성해링턴스퀘어";
-  if(/삼창/.test(t))             return "삼창프라자";
-  if(/재화스퀘어/.test(t))       return "재화스퀘어";
-  if(/이마트/.test(t))           return "공덕 이마트 옆";
-  if(/롯데캐슬/.test(t))         return "롯데캐슬(공덕역 2번출구)";
-  if(/공덕역|마포역|공덕더샵|공덕역사/.test(t)) return "공덕역·마포역 주변";
-  if(/서부지법|서부지방법원|서부지원|법원/.test(t)) return "서부지법 주변";
-  return "기타";
-}
-// 존재하는 그룹만, 정해진 순서로 반환 (+ 위치 미기재는 맨 끝)
-function locGroupsPresent(data){
-  const set=new Set(data.map(locGroupOf));
-  const ordered=LOCATION_ORDER.filter(g=>set.has(g));
-  if(set.has("위치 미기재")) ordered.push("위치 미기재");
-  return ordered;
-}
 
 /* ============ HELPERS ============ */
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
@@ -666,17 +494,6 @@ function starsHTML(avg){
   if(avg==null) return '<span class="stars"></span><span class="noscore">별점 미기록</span>';
   const pct=Math.max(0,Math.min(100,(avg/5)*100));
   return `<span class="stars"><span class="fill" style="width:${pct}%"></span></span><span class="val">${avg.toFixed(1)}<small> / 5</small></span>`;
-}
-
-// 식권 종류별 아이콘: 제로페이(비플식권)=bzip.png, 식권대장=sick.png, 둘 다면 함께 표시
-function voucherIconsHTML(v, size){
-  if(!v || !v.accepted) return "";
-  const txt = (((v.systems&&v.systems.join(" "))||"") + " " + (v.note||"")).trim();
-  const s = size||16;
-  let html = "";
-  if(/제로페이|비플/.test(txt)) html += `<img class="vico" src="bzip.png" alt="제로페이" title="제로페이(비플식권)" style="height:${s}px">`;
-  if(/식권대장/.test(txt))      html += `<img class="vico" src="sick.png" alt="식권대장" title="식권대장" style="height:${s}px">`;
-  return html;
 }
 
 /* ============ RENDER FILTERS ============ */
@@ -786,9 +603,6 @@ function cardHTML(d){
         ${review}
         <div class="detail-foot">
           ${map}
-          <button class="rowbtn fav${d.favorite?' on':''}" data-fav="${esc(d.id)}" title="단골 지정/해제">${d.favorite?'⭐ 단골':'☆ 단골'}</button>
-          <button class="rowbtn" data-edit="${esc(d.id)}" title="편집">✎ 편집</button>
-          <button class="rowbtn danger del" data-del="${esc(d.id)}" title="삭제">삭제</button>
         </div>
       </div>
     </div>
@@ -830,14 +644,6 @@ function render(){
     if(e.target.closest("a,button")) return;
     h.parentElement.classList.toggle("open");
   });
-  $$("[data-del]").forEach(b=>b.onclick=e=>{ e.stopPropagation(); delEntry(b.dataset.del); });
-  $$("[data-edit]").forEach(b=>b.onclick=e=>{ e.stopPropagation(); openModal(b.dataset.edit); });
-  $$("[data-fav]").forEach(b=>b.onclick=e=>{ e.stopPropagation(); toggleFav(b.dataset.fav); });
-  // 저장소 상태 표시 (로컬 / Supabase, 쓰기 잠금 여부)
-  let hint = ""//ds.mode;
-  if(ds.needsPassword) hint += writePw ? "🔓 수정가능" : "🔒 조회모드";
-  $("#storeHint").textContent = hint;
-  const sm=$("#storeMode"); if(sm) sm.textContent = ds.needsPassword ? `${ds.mode} 연동 (외부 조회·수정 가능)` : "이 브라우저에 저장됩니다";
   updateFilterCount();
 }
 
@@ -855,173 +661,14 @@ function updateFilterCount(){
   btn.classList.toggle("active", n>0);
 }
 
-/* ============ DELETE / FAVORITE (데이터소스 경유) ============ */
-async function delEntry(id){
-  const d=findEntry(id); if(!d) return;
-  if(!(await ensureWritable())) return;
-  if(!confirm(`'${d.name}' 을(를) 목록에서 삭제할까요?`)) return;
-  try{
-    await ds.remove(id);
-    RECORDS=RECORDS.filter(x=>x.id!==id);
-    refreshAll(); toast("삭제했습니다");
-  }catch(e){ handleWriteError(e); }
-}
-
-async function toggleFav(id){
-  const d=findEntry(id); if(!d) return;
-  if(!(await ensureWritable())) return;
-  const next=!d.favorite;
-  try{
-    const saved=await ds.update({...d, favorite:next});
-    applyUpdated(saved);
-    refreshAll(); toast(next? "단골로 표시했습니다":"단골 표시를 해제했습니다");
-  }catch(e){ handleWriteError(e); }
-}
-
 function refreshAll(){ buildSectionFilters(); buildCatFilters(); render(); }
 
-/* ============ MODAL (등록 + 편집 공용) ============ */
-let pickedStar=0;
-let editingId=null;   // null이면 신규 등록, 아니면 해당 id 편집
-
-function openModal(id){
-  editingId = id || null;
-  $("#f_section").innerHTML=SECTIONS.map(s=>`<option value="${esc(s)}">${esc(SECTION_SHORT[s]||s)}</option>`).join("");
-  const cats=[...new Set(allData().map(d=>(d.cat_major||"").trim()).filter(Boolean))];
-  $("#catlist").innerHTML=cats.map(c=>`<option value="${esc(c)}">`).join("");
-
-  if(editingId){
-    const d=findEntry(editingId)||{};
-    $("#modalTitle").textContent="식당 정보 편집";
-    $("#saveBtn").textContent="저장하기";
-    $("#f_name").value=d.name||"";
-    if(d.section && SECTIONS.includes(d.section)) $("#f_section").value=d.section;
-    $("#f_catmajor").value=d.cat_major||"";
-    $("#f_catminor").value=d.cat_minor||"";
-    $("#f_menu").value=d.menu||"";
-    $("#f_mapurl").value=(d.map&&d.map.url)||"";
-    $("#f_mapdesc").value=(d.map&&d.map.desc)||"";
-    const v=d.voucher||{};
-    document.querySelector(`input[name=vch][value=${v.accepted?'ok':'no'}]`).checked=true;
-    $("#f_vnote").value = v.accepted ? ((v.systems&&v.systems.join(", "))||v.note||"") : ((v.note&&v.note!=="❌")?v.note:"");
-    $("#f_review").value=d.review||"";
-    $("#f_fav").checked=!!d.favorite;
-    pickedStar = (d.rating && d.rating.avg) ? Math.round(d.rating.avg) : 0;
-  } else {
-    $("#modalTitle").textContent="새 식당 등록";
-    $("#saveBtn").textContent="등록하기";
-  }
-  paintStars();
-  $("#overlay").classList.add("open");
-  document.body.style.overflow="hidden";
-  setTimeout(()=>$("#f_name").focus(),50);
-}
-function closeModal(){
-  $("#overlay").classList.remove("open");
-  document.body.style.overflow="";
-  editingId=null;
-  ["f_name","f_catmajor","f_catminor","f_menu","f_mapurl","f_mapdesc","f_vnote","f_review"].forEach(id=>$("#"+id).value="");
-  $("#f_fav").checked=false; $("#formErr").textContent=""; pickedStar=0; paintStars();
-  document.querySelector('input[name=vch][value=ok]').checked=true;
-}
-function paintStars(){ $$("#starpick .s").forEach(s=>s.classList.toggle("on", +s.dataset.v<=pickedStar)); }
-
-function readForm(base){
-  const vch=document.querySelector('input[name=vch]:checked').value;
-  const vnote=$("#f_vnote").value.trim();
-  return {
-    ...base,
-    section:$("#f_section").value,
-    cat_major:$("#f_catmajor").value.trim(),
-    cat_minor:$("#f_catminor").value.trim(),
-    name:$("#f_name").value.trim(),
-    favorite:$("#f_fav").checked,
-    menu:$("#f_menu").value.trim(),
-    map:{ url:$("#f_mapurl").value.trim(), desc:$("#f_mapdesc").value.trim() },
-    voucher:{ accepted: vch==="ok", systems: (vch==="ok"&&vnote)?[vnote]:[], note: vch==="no"?"❌":vnote },
-    review:$("#f_review").value.trim(),
-    rating:{ stars: pickedStar?[pickedStar]:[], avg: pickedStar||null, note:"" }
-  };
-}
-
-async function save(){
-  const name=$("#f_name").value.trim();
-  if(!name){ $("#formErr").textContent="식당 이름을 입력해 주세요."; $("#f_name").focus(); return; }
-  if(!(await ensureWritable())){ $("#formErr").textContent="수정하려면 공유 비밀번호가 필요합니다."; return; }
-  $("#formErr").textContent="";
-
-  try{
-    if(editingId){
-      const cur=findEntry(editingId)||{};
-      const rec=readForm({ id:editingId });
-      // 메뉴별 평점 메모 등 기존 rating.note는 유지 (폼에 입력란이 없음)
-      if(cur.rating && cur.rating.note && !rec.rating.note) rec.rating.note=cur.rating.note;
-      const saved=await ds.update(rec);
-      applyUpdated(saved);
-      refreshAll(); closeModal();
-      toast(`'${name}' 수정 완료 ✓`);
-      return;
-    }
-
-    // 신규 등록
-    const rec=readForm({});
-    const saved=await ds.create(rec);
-    RECORDS.push(saved);
-    // reveal the new card: jump to its section, clear filters
-    state.q=""; $("#q").value=""; state.cat="all"; state.section=saved.section||rec.section; state.sort="newest"; $("#sort").value="newest";
-    Object.keys(state.tgl).forEach(k=>state.tgl[k]=false); $$(".chip.tgl").forEach(c=>c.classList.remove("on"));
-    refreshAll(); closeModal();
-    toast(`'${name}' 등록 완료 ✓`);
-  }catch(e){
-    handleWriteError(e);
-    $("#formErr").textContent=String((e&&e.message)||e);
-  }
-}
-
-/* ============ EXPORT / IMPORT ============ */
+/* ============ EXPORT ============ */
 function exportJSON(){
   const blob=new Blob([JSON.stringify(allData(),null,2)],{type:"application/json"});
   const a=document.createElement("a");
   a.href=URL.createObjectURL(blob);
   a.download="식당목록.json"; a.click(); URL.revokeObjectURL(a.href);
-}
-
-// 가져온 목록을 현재 목록/DB에 병합한다 (id 있으면 수정, 없으면 추가)
-async function mergeImported(list){
-  if(!Array.isArray(list)) throw new Error("형식 오류");
-  if(!(await ensureWritable())) throw new Error("공유 비밀번호가 필요합니다");
-  let added=0, updated=0;
-  const byId=new Map(RECORDS.map(r=>[r.id,r]));
-  for(const item of list){
-    if(!item || typeof item!=="object" || !item.name) continue;
-    if(item.id && byId.has(item.id)){
-      const saved=await ds.update({...byId.get(item.id), ...item});
-      applyUpdated(saved); updated++;
-    } else {
-      const {id, _t, ...rest}=item;
-      const saved=await ds.create(rest);
-      RECORDS.push(saved); added++;
-    }
-  }
-  return {added, updated};
-}
-
-function importJSON(file){
-  const reader=new FileReader();
-  reader.onload=async ()=>{
-    try{
-      const data=JSON.parse(reader.result);
-      const list=Array.isArray(data)? data : (Array.isArray(data.items)? data.items : null);
-      if(!list) throw new Error("목록을 찾을 수 없습니다");
-      toast("가져오는 중…");
-      const {added, updated}=await mergeImported(list);
-      refreshAll();
-      toast(`가져오기 완료 · 추가 ${added}곳, 수정 ${updated}곳`);
-    }catch(e){
-      toast("가져오기 실패: " + String((e&&e.message)||e));
-    }
-  };
-  reader.readAsText(file);
 }
 
 /* ============ SHARE ============ */
@@ -1038,7 +685,7 @@ function openShare(){
     $("#linkSection").style.display="";
     $("#qrSection").style.display="flex";
     buildQR(url);
-    $("#shareHint").innerHTML="같은 네트워크/주소로 접속 가능한 상대에게 <b>링크·QR</b>로 공유하세요. 개인 기록(내가 추가·수정한 항목)까지 함께 보내려면 <b>목록 파일(JSON) 내보내기</b>로 전달하세요.";
+    $("#shareHint").innerHTML="이 주소로 접속 가능한 상대에게 <b>링크·QR</b>로 공유하세요. 목록 자체를 파일로 보내려면 <b>목록 파일(JSON) 내보내기</b>를 쓰세요.";
   } else {
     $("#linkSection").style.display="none";
     $("#qrSection").style.display="none";
@@ -1105,23 +752,11 @@ function toast(msg){
 $("#q").addEventListener("input",e=>{ state.q=e.target.value; render(); });
 $$(".chip.tgl").forEach(c=>c.onclick=()=>{ const k=c.dataset.tgl; state.tgl[k]=!state.tgl[k]; c.classList.toggle("on",state.tgl[k]); render(); });
 $("#sort").onchange=e=>{ state.sort=e.target.value; render(); };
-$("#addBtn").onclick=openModal;
 $("#filterToggle").onclick=()=>{
   const p=$("#filterPanel"); const open=p.classList.toggle("open");
   $("#filterToggle").setAttribute("aria-expanded", open);
 };
-$("#closeModal").onclick=closeModal;
-$("#cancelBtn").onclick=closeModal;
-$("#saveBtn").onclick=save;
-$("#overlay").onclick=e=>{ if(e.target===$("#overlay")) closeModal(); };
-document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&$("#overlay").classList.contains("open")) closeModal(); });
-$$("#starpick .s").forEach(s=>s.onclick=()=>{ pickedStar=+s.dataset.v; paintStars(); });
-$("#starClr").onclick=()=>{ pickedStar=0; paintStars(); };
 $("#exportLink").onclick=e=>{ e.preventDefault(); exportJSON(); };
-
-/* import */
-$("#importLink").onclick=e=>{ e.preventDefault(); $("#importFile").click(); };
-$("#importFile").onchange=e=>{ const f=e.target.files[0]; if(f) importJSON(f); e.target.value=""; };
 
 /* share */
 $("#shareBtn").onclick=openShare;
@@ -1133,23 +768,17 @@ $("#copyUrlBtn").onclick=copyUrl;
 $("#shareExportBtn").onclick=exportJSON;
 document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&$("#shareOverlay").classList.contains("open")) closeShare(); });
 
-/* password modal (마스킹 입력) */
-$("#pwOk").onclick=()=>{ const v=$("#pwInput").value.trim(); if(!v){ $("#pwErr").textContent="비밀번호를 입력하세요."; $("#pwInput").focus(); return; } closePw(v); };
-$("#pwCancel").onclick=()=>closePw(null);
-$("#pwClose").onclick=()=>closePw(null);
-$("#pwOverlay").onclick=e=>{ if(e.target===$("#pwOverlay")) closePw(null); };
-$("#pwInput").addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); $("#pwOk").click(); } });
-document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&$("#pwOverlay").classList.contains("open")) closePw(null); });
-
 /* ============ INIT ============ */
 async function init(){
   $("#storeHint").textContent = "불러오는 중…";
   try{
-    RECORDS = await ds.list();
+    // 관리자가 숨긴 식당은 사용자 화면에서 제외
+    RECORDS = (await ds.list()).filter(d=>!isHidden(d));
   }catch(e){
     RECORDS = [];
     toast("데이터를 불러오지 못했습니다: " + String((e&&e.message)||e));
   }
+  $("#storeHint").textContent = "";
   // 'newest' 정렬 안정화를 위해 _t 기본값 보정
   RECORDS.forEach(d=>{ if(d._t==null) d._t=0; });
   buildSectionFilters(); buildCatFilters(); render();
@@ -1163,7 +792,7 @@ if("serviceWorker" in navigator){
 
 /* ============ 방문자 카운터 ============ */
 // Supabase: counters 테이블 + bump_visits() RPC (supabase/counter.sql 실행 필요)
-// 로컬 모드: 이 브라우저 기준 카운트. 증가는 세션당 1회.
+// 로컬 모드: 이 브라우저 기준 카운트. 방문(로드)마다 +1.
 async function initVisitorCounter(){
   const el=$("#visitCount"); if(!el) return;
   const fmt=n=>Number(n).toLocaleString('ko-KR');
