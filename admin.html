@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>관리자 · 동네 식당 노트</title>
+<link rel="icon" href="favicon.ico" sizes="any">
+<meta name="theme-color" content="#26201c">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#26201c; --ink-soft:#5b5147; --paper:#f3ede1; --paper-2:#ece3d3; --card:#fffdf8;
+    --line:#ddd2bd; --line-strong:#c8b59a; --persimmon:#c8451f; --persimmon-dark:#a4360f;
+    --soy:#7a5230; --herb:#3f7355; --herb-soft:#e6efe6; --gold:#d99a1c;
+    --shadow:0 1px 0 rgba(38,32,28,.04), 0 6px 20px -12px rgba(38,32,28,.35); --r:14px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Noto Sans KR",system-ui,sans-serif;color:var(--ink);background:var(--paper);
+    background-image:radial-gradient(rgba(122,82,48,.05) 1px, transparent 1px);background-size:22px 22px;
+    line-height:1.55;-webkit-font-smoothing:antialiased}
+  a{color:inherit}
+  [hidden]{display:none !important}
+
+  /* ---------- Header ---------- */
+  header.masthead{background:var(--ink);color:var(--paper);padding:22px 20px 20px;border-bottom:4px solid var(--persimmon)}
+  .mh{max-width:1120px;margin:0 auto;display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap}
+  .eyebrow{font-size:12px;letter-spacing:.32em;color:var(--gold);font-weight:700;margin:0 0 6px}
+  h1.title{font-family:"Gowun Batang",serif;font-weight:700;font-size:clamp(22px,3.2vw,30px);line-height:1.1;margin:0}
+  h1.title .accent{color:var(--persimmon)}
+  .mh-links{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .mh-links a,.mh-links button{font-family:inherit;font-size:13px;font-weight:700;color:var(--paper);text-decoration:none;
+    background:transparent;border:1.5px solid rgba(243,237,225,.35);border-radius:9px;padding:7px 12px;cursor:pointer}
+  .mh-links a:hover,.mh-links button:hover{border-color:var(--persimmon);color:#fff}
+  .modetag{font-size:11.5px;color:#d8cdba}
+
+  /* ---------- Buttons / chips ---------- */
+  .btn{font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;border-radius:10px;padding:10px 15px;
+    border:1.5px solid var(--ink);background:var(--ink);color:var(--paper);white-space:nowrap;transition:.15s}
+  .btn:hover{background:var(--persimmon);border-color:var(--persimmon)}
+  .btn.ghost{background:transparent;color:var(--ink);border-color:var(--line-strong)}
+  .btn.ghost:hover{background:var(--card);color:var(--persimmon);border-color:var(--persimmon)}
+  .btn.sm{padding:6px 11px;font-size:12.5px;border-radius:8px}
+  .btn.herb{background:var(--herb);border-color:var(--herb)}
+  .btn.herb:hover{background:#2f5a41;border-color:#2f5a41}
+  .btn.danger{background:transparent;color:var(--persimmon-dark);border-color:#e6c4b8}
+  .btn.danger:hover{background:#f6e6e1;border-color:var(--persimmon);color:var(--persimmon)}
+  .chip{font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;border:1.5px solid var(--line-strong);
+    background:var(--card);color:var(--ink-soft);border-radius:999px;padding:6px 12px;display:inline-flex;gap:6px;align-items:center}
+  .chip:hover{border-color:var(--persimmon);color:var(--persimmon)}
+  .chip.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .chip .n{font-size:11px;opacity:.65;font-weight:700}
+  select.sel{font-family:inherit;font-size:13px;padding:7px 11px;border-radius:999px;border:1.5px solid var(--line-strong);
+    background:var(--card);color:var(--ink);cursor:pointer;max-width:100%}
+
+  /* ---------- Login ---------- */
+  .login-wrap{max-width:420px;margin:60px auto;padding:0 20px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:26px}
+  .card h2{font-family:"Gowun Batang",serif;margin:0 0 6px;font-size:22px}
+  .card p.desc{margin:0 0 18px;color:var(--ink-soft);font-size:13.5px}
+
+  /* ---------- Toolbar ---------- */
+  main{max-width:1120px;margin:0 auto;padding:18px 20px 80px}
+  .toolbar-card{background:rgba(243,237,225,.94);backdrop-filter:blur(8px);border:1px solid var(--line);
+    border-radius:var(--r);padding:12px;box-shadow:var(--shadow);position:sticky;top:0;z-index:20}
+  .row1{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .search{flex:1;min-width:200px;display:flex;align-items:center;gap:8px;background:var(--card);
+    border:1.5px solid var(--line-strong);border-radius:10px;padding:9px 13px}
+  .search:focus-within{border-color:var(--persimmon)}
+  .search input{border:0;outline:0;background:transparent;font-size:14.5px;width:100%;font-family:inherit;color:var(--ink)}
+  .row2{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+  .lbl{font-size:11px;letter-spacing:.12em;color:var(--ink-soft);font-weight:700;margin-right:2px}
+  .spacer{flex:1}
+  .stats{margin:14px 2px 10px;font-size:13px;color:var(--ink-soft)}
+  .stats b{color:var(--ink)}
+
+  /* ---------- List ---------- */
+  .alist{display:flex;flex-direction:column;gap:7px}
+  .arow{display:grid;grid-template-columns:54px minmax(0,1fr) 190px 62px 64px auto;
+    grid-template-areas:"st main area rate vch act";align-items:center;gap:12px;
+    background:var(--card);border:1px solid var(--line);border-radius:11px;padding:11px 14px;box-shadow:var(--shadow)}
+  .arow.hidden{background:#f1ece2;border-style:dashed}
+  .arow.hidden .aname,.arow.hidden .asub,.arow.hidden .aarea{opacity:.55}
+  .st{grid-area:st;font-size:11.5px;font-weight:800;text-align:center;border-radius:6px;padding:3px 0}
+  .st.on{background:var(--herb-soft);color:var(--herb);border:1px solid #bcd6bf}
+  .st.off{background:#ece3d3;color:var(--ink-soft);border:1px solid var(--line-strong)}
+  .amain{grid-area:main;min-width:0}
+  .aname{font-family:"Gowun Batang",serif;font-weight:700;font-size:16.5px;line-height:1.2;display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+  .asub{font-size:12.5px;color:var(--ink-soft);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .aarea{grid-area:area;font-size:12.5px;color:var(--soy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .arate{grid-area:rate;font-size:13px;font-weight:700;color:var(--gold);white-space:nowrap}
+  .arate.none{color:var(--line-strong);font-weight:500}
+  .avch{grid-area:vch;display:flex;gap:3px;align-items:center}
+  .avch .no{font-size:12px;color:var(--persimmon-dark);font-weight:700}
+  .aact{grid-area:act;display:flex;gap:6px;justify-content:flex-end}
+  .favtag{font-family:"Noto Sans KR",sans-serif;font-size:10.5px;font-weight:800;color:#fff;background:var(--herb);border-radius:5px;padding:1px 6px}
+  .vico{height:16px;width:auto;vertical-align:middle;border-radius:3px;object-fit:contain}
+  .empty{text-align:center;padding:60px 20px;color:var(--ink-soft)}
+  @media(max-width:780px){
+    .arow{grid-template-columns:auto minmax(0,1fr) auto auto;
+      grid-template-areas:"st main main main" "area area rate vch" "act act act act";gap:8px 10px}
+    .st{padding:3px 8px}
+    .aact{justify-content:flex-start;flex-wrap:wrap}
+    .asub{white-space:normal}
+  }
+
+  /* ---------- Modal / form ---------- */
+  .overlay{position:fixed;inset:0;background:rgba(38,32,28,.55);display:none;z-index:100;padding:20px;overflow:auto}
+  .overlay.open{display:flex;align-items:flex-start;justify-content:center}
+  .modal{background:var(--paper);border-radius:18px;max-width:600px;width:100%;margin:auto;
+    box-shadow:0 30px 70px -20px rgba(0,0,0,.5);border:1px solid var(--line);overflow:hidden}
+  .modal-head{background:var(--ink);color:var(--paper);padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
+  .modal-head h2{font-family:"Gowun Batang",serif;margin:0;font-size:21px}
+  .modal-head .x{background:none;border:0;color:var(--paper);font-size:26px;cursor:pointer;line-height:1;opacity:.7}
+  .modal-head .x:hover{opacity:1}
+  .modal-body{padding:20px 22px 24px;display:grid;gap:14px}
+  .field{display:grid;gap:5px}
+  .field > label{font-size:12px;font-weight:700;letter-spacing:.06em;color:var(--ink-soft)}
+  .req{color:var(--persimmon)}
+  .field input[type=text],.field input[type=url],.field input[type=number],.field input[type=password],.field textarea,.field select{
+    font-family:inherit;font-size:14.5px;color:var(--ink);border:1.5px solid var(--line-strong);border-radius:9px;
+    padding:9px 12px;background:var(--card);width:100%}
+  .field input:focus,.field textarea:focus,.field select:focus{outline:0;border-color:var(--persimmon)}
+  .field textarea{resize:vertical;min-height:58px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .checkrow{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+  .check{display:inline-flex;gap:6px;align-items:center;font-size:14px;cursor:pointer}
+  .hintline{font-size:12px;color:var(--herb);font-weight:600;min-height:1em}
+  .box{border:1.5px dashed var(--line-strong);border-radius:10px;padding:11px 13px;display:grid;gap:10px;background:rgba(255,253,248,.6)}
+  .box.warn{border-color:#e6c4b8;background:#fbf1ed}
+  .modal-foot{display:flex;gap:10px;justify-content:flex-end;padding-top:4px}
+  .err{color:var(--persimmon-dark);font-size:12.5px;font-weight:600;min-height:1em}
+  @media(max-width:560px){.grid2{grid-template-columns:1fr}}
+
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--paper);
+    padding:12px 20px;border-radius:999px;font-size:14px;font-weight:600;box-shadow:0 10px 30px -8px rgba(0,0,0,.5);
+    opacity:0;pointer-events:none;transition:.25s;z-index:200;border-left:4px solid var(--herb);max-width:90vw}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="mh">
+    <div>
+      <p class="eyebrow">ADMIN · 관리자</p>
+      <h1 class="title">동네 식당 노트 <span class="accent">관리</span></h1>
+    </div>
+    <div class="mh-links">
+      <span class="modetag" id="modeTag"></span>
+      <a href="index.html" target="_blank" rel="noopener">사용자 화면 ↗</a>
+      <button id="logoutBtn" hidden>로그아웃</button>
+    </div>
+  </div>
+</header>
+
+<!-- ============ 로그인 ============ -->
+<section class="login-wrap" id="loginView" hidden>
+  <form class="card" id="loginForm" autocomplete="on">
+    <h2>관리자 로그인</h2>
+    <p class="desc">식당 추가·수정·삭제·숨김은 관리자만 할 수 있습니다.<br>공유 비밀번호를 입력하세요.</p>
+    <div class="field">
+      <label for="loginPw">비밀번호</label>
+      <input id="loginPw" type="password" autocomplete="current-password" placeholder="비밀번호" required>
+    </div>
+    <div class="err" id="loginErr" style="margin:10px 0 4px"></div>
+    <button class="btn" type="submit" id="loginBtn" style="width:100%">로그인</button>
+  </form>
+</section>
+
+<!-- ============ 관리 화면 ============ -->
+<main id="appView" hidden>
+  <div class="toolbar-card">
+    <div class="row1">
+      <label class="search">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+        <input id="q" type="text" placeholder="이름·메뉴·위치·후기 검색…" autocomplete="off">
+      </label>
+      <button class="btn herb" id="addBtn">＋ 새 식당</button>
+    </div>
+    <div class="row2">
+      <span class="lbl">상태</span>
+      <div id="statusChips" style="display:contents"></div>
+      <span class="lbl" style="margin-left:6px">지역</span>
+      <select class="sel" id="areaSel"></select>
+      <span class="lbl" style="margin-left:6px">정렬</span>
+      <select class="sel" id="sortSel">
+        <option value="area">지역순</option>
+        <option value="name">이름순</option>
+        <option value="updated">최근 수정순</option>
+      </select>
+      <span class="spacer"></span>
+      <button class="btn ghost sm" id="reloadBtn" title="서버에서 다시 불러오기">↻ 새로고침</button>
+      <button class="btn ghost sm" id="importBtn">가져오기</button>
+      <button class="btn ghost sm" id="exportBtn">내보내기</button>
+      <input type="file" id="importFile" accept="application/json,.json" hidden>
+    </div>
+  </div>
+
+  <div class="stats" id="stats"></div>
+  <div class="alist" id="list"></div>
+  <div class="empty" id="empty" hidden>조건에 맞는 식당이 없습니다.</div>
+</main>
+
+<!-- ============ 추가/수정 모달 ============ -->
+<div class="overlay" id="overlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-head">
+      <h2 id="modalTitle">새 식당</h2>
+      <button class="x" id="closeModal" aria-label="닫기">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label for="f_name">식당 이름 <span class="req">*</span></label>
+        <input id="f_name" type="text" maxlength="40" placeholder="예) 마포양지설렁탕">
+      </div>
+      <div class="grid2">
+        <div class="field">
+          <label for="f_section">구역</label>
+          <select id="f_section"></select>
+        </div>
+        <div class="field">
+          <label for="f_catmajor">종류</label>
+          <input id="f_catmajor" type="text" list="catlist" maxlength="12" placeholder="예) 한식, 카페">
+          <datalist id="catlist"></datalist>
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="field">
+          <label for="f_catminor">세부 종류</label>
+          <input id="f_catminor" type="text" maxlength="16" placeholder="예) 국밥">
+        </div>
+        <div class="field">
+          <label for="f_menu">주 메뉴</label>
+          <input id="f_menu" type="text" maxlength="60" placeholder="예) 설렁탕, 내장탕">
+        </div>
+      </div>
+      <div class="field">
+        <label for="f_mapurl">지도 링크</label>
+        <input id="f_mapurl" type="url" placeholder="https://naver.me/…">
+      </div>
+      <div class="field">
+        <label for="f_mapdesc">위치 설명</label>
+        <input id="f_mapdesc" type="text" maxlength="40" placeholder="예) S-OIL 뒷편(먹자골목)">
+        <div class="hintline" id="areaHint"></div>
+      </div>
+
+      <div class="box">
+        <div class="checkrow">
+          <label class="check"><input type="checkbox" id="f_vok"> <b>식권 사용 가능</b></label>
+          <label class="check"><input type="checkbox" id="f_vzero"> <img class="vico" src="bzip.png" alt=""> 제로페이(비플)</label>
+          <label class="check"><input type="checkbox" id="f_vsick"> <img class="vico" src="sick.png" alt=""> 식권대장</label>
+        </div>
+        <div class="field">
+          <label for="f_vnote">식권 비고</label>
+          <input id="f_vnote" type="text" maxlength="60" placeholder="예) 비플페이 안 됨, 제로페이로 결제">
+        </div>
+      </div>
+
+      <div class="grid2">
+        <div class="field">
+          <label for="f_avg">평점 (0~5, 소수 가능)</label>
+          <input id="f_avg" type="number" min="0" max="5" step="0.05" placeholder="예) 4.5">
+        </div>
+        <div class="field">
+          <label>&nbsp;</label>
+          <label class="check"><input type="checkbox" id="f_fav"> ⭐ 단골집</label>
+        </div>
+      </div>
+      <div class="field">
+        <label for="f_rnote">메뉴별 평점 메모</label>
+        <textarea id="f_rnote" maxlength="300" placeholder="예) 설렁탕 (★4.5)&#10;내장탕 (★5.0)"></textarea>
+      </div>
+      <div class="field">
+        <label for="f_review">방문 후기</label>
+        <textarea id="f_review" maxlength="500" placeholder="좌석, 맛, 추천 메뉴, 방문 팁 등"></textarea>
+      </div>
+
+      <div class="box warn">
+        <label class="check"><input type="checkbox" id="f_hidden"> <b>숨기기</b> — 사용자 화면에 노출하지 않음 (관리자 화면에만 표시)</label>
+      </div>
+
+      <div class="err" id="formErr"></div>
+      <div class="modal-foot">
+        <button class="btn ghost" id="cancelBtn">취소</button>
+        <button class="btn" id="saveBtn">저장</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="restaurant-data.js"></script>
+<script src="config.js"></script>
+<script src="api.js"></script>
+<script src="shared.js"></script>
+<script>
+/* ============================================================
+   관리자 화면 — 전체 식당(숨김 포함) 조회 · 추가 · 수정 · 삭제 · 보이기/숨기기
+   숨김은 레코드의 data.hidden = true 로 저장되며, 사용자 화면(index.html)은 이를 제외하고 보여준다.
+   ============================================================ */
+const ds = makeDataSource();
+const PW_KEY = "restaurant-write-pw";
+let RECORDS = [];
+const st = { q:"", status:"all", area:"all", sort:"area" };
+let editingId = null;
+
+/* ---------- helpers ---------- */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+function esc(s){return (s==null?"":String(s)).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function avgOf(d){ return d.rating && d.rating.avg!=null ? d.rating.avg : (d.rating&&d.rating.stars&&d.rating.stars.length? d.rating.stars.reduce((a,b)=>a+b,0)/d.rating.stars.length : null); }
+function findEntry(id){ return RECORDS.find(d=>d.id===id); }
+function applyUpdated(rec){ const i=RECORDS.findIndex(x=>x.id===rec.id); if(i>=0) RECORDS[i]=rec; else RECORDS.push(rec); }
+let toastT;
+function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("show"),2800); }
+function isAuthErr(e){ return !!e && (e.status===401 || e.status===403 || /row-level security|permission|권한/i.test(String(e.message||""))); }
+function failMsg(e){ return String((e&&e.message)||e); }
+
+/* ---------- 로그인 / 로그아웃 ---------- */
+function showLogin(msg){
+  $("#appView").hidden=true; $("#loginView").hidden=false; $("#logoutBtn").hidden=true;
+  $("#loginErr").textContent=msg||""; $("#loginPw").value="";
+  setTimeout(()=>$("#loginPw").focus(),50);
+}
+async function showApp(){
+  $("#loginView").hidden=true; $("#appView").hidden=false;
+  $("#logoutBtn").hidden=!ds.needsPassword;
+  await load();
+}
+function logout(msg){
+  try{ localStorage.removeItem(PW_KEY); }catch(e){}
+  if(ds.setPassword) ds.setPassword(null);
+  RECORDS=[];
+  showLogin(msg);
+}
+// 쓰기 실패가 권한 문제면 로그인 화면으로
+function handleErr(e){
+  if(isAuthErr(e)){ logout("권한이 없습니다. 비밀번호를 다시 입력하세요."); toast("권한 오류 — 다시 로그인하세요"); }
+  else toast("실패: "+failMsg(e));
+}
+
+async function doLogin(ev){
+  ev.preventDefault();
+  const pw=$("#loginPw").value.trim();
+  if(!pw){ $("#loginErr").textContent="비밀번호를 입력하세요."; return; }
+  $("#loginBtn").disabled=true; $("#loginErr").textContent="확인 중…";
+  try{
+    const ok=await ds.verifyPassword(pw);
+    if(!ok){ $("#loginErr").textContent="비밀번호가 올바르지 않습니다."; return; }
+    ds.setPassword(pw);
+    try{ localStorage.setItem(PW_KEY, pw); }catch(e){}
+    $("#loginErr").textContent="";
+    await showApp();
+  }catch(e){
+    $("#loginErr").textContent="확인 실패: "+failMsg(e);
+  }finally{ $("#loginBtn").disabled=false; }
+}
+
+/* ---------- 데이터 ---------- */
+async function load(){
+  $("#stats").textContent="불러오는 중…";
+  try{
+    RECORDS=await ds.list();
+    RECORDS.forEach(d=>{ if(d._t==null) d._t=0; });
+    renderAll();
+  }catch(e){
+    $("#stats").textContent="";
+    handleErr(e);
+  }
+}
+
+/* ---------- 목록 ---------- */
+const AREA_ORDER=[...LOCATION_ORDER,"위치 미기재"];
+function areaIdx(d){ const i=AREA_ORDER.indexOf(locGroupOf(d)); return i<0?999:i; }
+
+function view(){
+  let l=RECORDS;
+  if(st.status==="shown")  l=l.filter(d=>!isHidden(d));
+  if(st.status==="hidden") l=l.filter(d=>isHidden(d));
+  if(st.area!=="all") l=l.filter(d=>locGroupOf(d)===st.area);
+  const q=st.q.trim().toLowerCase();
+  if(q) l=l.filter(d=>[d.name,d.menu,d.cat_major,d.cat_minor,d.review,d.map&&d.map.desc,d.rating&&d.rating.note,d.voucher&&d.voucher.note]
+                       .join(" ").toLowerCase().includes(q));
+  const byName=(a,b)=>(a.name||"").localeCompare(b.name||"","ko");
+  if(st.sort==="name")         l=[...l].sort(byName);
+  else if(st.sort==="updated") l=[...l].sort((a,b)=>(b._t||0)-(a._t||0));
+  else                         l=[...l].sort((a,b)=>areaIdx(a)-areaIdx(b) || byName(a,b));
+  return l;
+}
+
+function rowHTML(d){
+  const hid=isHidden(d), avg=avgOf(d), v=d.voucher||{};
+  const cats=[d.cat_major,d.cat_minor].map(c=>(c||"").trim()).filter(Boolean).join(" / ")||"미분류";
+  const sub=[SECTION_SHORT[d.section]||d.section||"구역 없음", cats, d.menu].filter(Boolean).map(esc).join(" · ");
+  return `<div class="arow${hid?' hidden':''}" data-id="${esc(d.id)}">
+    <span class="st ${hid?'off':'on'}">${hid?'숨김':'공개'}</span>
+    <div class="amain">
+      <div class="aname">${esc(d.name)}${d.favorite?' <span class="favtag">⭐ 단골</span>':''}</div>
+      <div class="asub">${sub}</div>
+    </div>
+    <span class="aarea" title="${esc((d.map&&d.map.desc)||'')}">📍 ${esc(locGroupOf(d))}</span>
+    <span class="arate${avg==null?' none':''}">${avg!=null?'★ '+avg.toFixed(1):'—'}</span>
+    <span class="avch">${v.accepted?(voucherIconsHTML(v,16)||'🍚'):'<span class="no">✕</span>'}</span>
+    <div class="aact">
+      <button class="btn sm ghost" data-act="edit">편집</button>
+      <button class="btn sm ${hid?'herb':'ghost'}" data-act="toggle">${hid?'보이기':'숨기기'}</button>
+      <button class="btn sm danger" data-act="del">삭제</button>
+    </div>
+  </div>`;
+}
+
+function renderStatus(){
+  const total=RECORDS.length, hidden=RECORDS.filter(isHidden).length;
+  const opts=[["all","전체",total],["shown","공개",total-hidden],["hidden","숨김",hidden]];
+  $("#statusChips").innerHTML=opts.map(([k,l,n])=>`<button class="chip${st.status===k?' on':''}" data-status="${k}">${l} <span class="n">${n}</span></button>`).join("");
+}
+function renderAreaOptions(){
+  const groups=locGroupsPresent(RECORDS);
+  if(st.area!=="all" && !groups.includes(st.area)) st.area="all";
+  $("#areaSel").innerHTML=`<option value="all">전체 지역</option>`+groups.map(g=>`<option value="${esc(g)}"${st.area===g?' selected':''}>${esc(g)}</option>`).join("");
+}
+function renderList(){
+  const l=view();
+  $("#list").innerHTML=l.map(rowHTML).join("");
+  $("#empty").hidden=l.length>0;
+  const total=RECORDS.length, hidden=RECORDS.filter(isHidden).length;
+  $("#stats").innerHTML=`전체 <b>${total}</b>곳 · 공개 <b>${total-hidden}</b> · 숨김 <b>${hidden}</b>`+(l.length!==total?` — 표시 중 <b>${l.length}</b>`:"");
+}
+function renderAll(){ renderStatus(); renderAreaOptions(); renderList(); }
+
+/* ---------- 보이기/숨기기 · 삭제 ---------- */
+async function toggleHidden(id){
+  const d=findEntry(id); if(!d) return;
+  const next=!isHidden(d);
+  try{
+    const saved=await ds.update({...d, hidden:next});
+    applyUpdated(saved); renderAll();
+    toast(next?`'${d.name}' 숨김 — 사용자 화면에서 안 보입니다`:`'${d.name}' 공개 — 사용자 화면에 보입니다`);
+  }catch(e){ handleErr(e); }
+}
+async function delEntry(id){
+  const d=findEntry(id); if(!d) return;
+  if(!confirm(`'${d.name}' 을(를) 완전히 삭제할까요?\n(되돌릴 수 없습니다. 잠시 안 보이게 하려면 '숨기기'를 쓰세요)`)) return;
+  try{
+    await ds.remove(id);
+    RECORDS=RECORDS.filter(x=>x.id!==id); renderAll();
+    toast(`'${d.name}' 삭제했습니다`);
+  }catch(e){ handleErr(e); }
+}
+
+/* ---------- 추가/수정 폼 ---------- */
+function openModal(id){
+  editingId=id||null;
+  const d=editingId?(findEntry(editingId)||{}):{};
+  // 구역: 표준 목록 + (기존 값이 목록에 없으면) 그 값도 유지
+  const secs=[...SECTIONS]; if(d.section && !secs.includes(d.section)) secs.push(d.section);
+  $("#f_section").innerHTML=secs.map(s=>`<option value="${esc(s)}">${esc(SECTION_SHORT[s]||s)}</option>`).join("");
+  $("#f_section").value=d.section||SECTIONS[0];
+  const cats=[...new Set(RECORDS.map(r=>(r.cat_major||"").trim()).filter(Boolean))];
+  $("#catlist").innerHTML=cats.map(c=>`<option value="${esc(c)}">`).join("");
+
+  $("#modalTitle").textContent=editingId?"식당 정보 수정":"새 식당";
+  $("#saveBtn").textContent=editingId?"저장":"추가";
+  $("#f_name").value=d.name||"";
+  $("#f_catmajor").value=d.cat_major||"";
+  $("#f_catminor").value=d.cat_minor||"";
+  $("#f_menu").value=d.menu||"";
+  $("#f_mapurl").value=(d.map&&d.map.url)||"";
+  $("#f_mapdesc").value=(d.map&&d.map.desc)||"";
+  const v=d.voucher||{}, vtxt=((v.systems||[]).join(" ")+" "+(v.note||""));
+  $("#f_vok").checked=!!v.accepted;
+  $("#f_vzero").checked=!!v.accepted && /제로페이|비플/.test(vtxt);
+  $("#f_vsick").checked=!!v.accepted && /식권대장/.test(vtxt);
+  $("#f_vnote").value=(v.note && v.note!=="❌")?v.note:"";
+  const avg=avgOf(d);
+  $("#f_avg").value=avg!=null?(Math.round(avg*100)/100):"";
+  $("#f_rnote").value=(d.rating&&d.rating.note)||"";
+  $("#f_review").value=d.review||"";
+  $("#f_fav").checked=!!d.favorite;
+  $("#f_hidden").checked=isHidden(d);
+  $("#formErr").textContent="";
+  updateAreaHint();
+  $("#overlay").classList.add("open");
+  document.body.style.overflow="hidden";
+  setTimeout(()=>$("#f_name").focus(),50);
+}
+function closeModal(){
+  $("#overlay").classList.remove("open");
+  document.body.style.overflow="";
+  editingId=null;
+}
+function updateAreaHint(){
+  const desc=$("#f_mapdesc").value.trim();
+  $("#areaHint").textContent= "→ 사용자 화면 지역 분류: " + locGroupOf({map:{desc}});
+}
+
+// 폼 → 레코드 (cur 의 알 수 없는 필드는 그대로 보존)
+function readForm(cur){
+  const accepted=$("#f_vok").checked;
+  const known=/제로페이|비플|식권대장/;
+  const extra=((cur.voucher&&cur.voucher.systems)||[]).filter(s=>!known.test(s));  // 기존 기타 식권명 보존
+  const systems=accepted?[...($("#f_vzero").checked?["비플식권(제로페이)"]:[]), ...($("#f_vsick").checked?["식권대장"]:[]), ...extra]:[];
+  let vnote=$("#f_vnote").value.trim();
+  if(!accepted && !vnote) vnote="❌";
+
+  const raw=$("#f_avg").value.trim();
+  const avg=raw===""?null:Math.round(parseFloat(raw)*100)/100;
+  const curAvg=avgOf(cur);
+  // 평점이 그대로면 기존 개별 별점 배열 유지, 바뀌면 [avg]
+  const stars= avg==null ? [] :
+    (curAvg!=null && Math.abs(curAvg-avg)<0.005 && cur.rating && cur.rating.stars && cur.rating.stars.length ? cur.rating.stars : [avg]);
+
+  return {
+    ...cur,
+    name:$("#f_name").value.trim(),
+    section:$("#f_section").value,
+    cat_major:$("#f_catmajor").value.trim(),
+    cat_minor:$("#f_catminor").value.trim(),
+    menu:$("#f_menu").value.trim(),
+    favorite:$("#f_fav").checked,
+    hidden:$("#f_hidden").checked,
+    map:{ url:$("#f_mapurl").value.trim(), desc:$("#f_mapdesc").value.trim() },
+    voucher:{ accepted, systems, note:vnote },
+    rating:{ stars, avg: avg==null?null:(curAvg!=null && Math.abs(curAvg-avg)<0.005 ? curAvg : avg), note:$("#f_rnote").value.trim() },
+    review:$("#f_review").value.trim()
+  };
+}
+
+async function save(){
+  const name=$("#f_name").value.trim();
+  if(!name){ $("#formErr").textContent="식당 이름을 입력하세요."; $("#f_name").focus(); return; }
+  const raw=$("#f_avg").value.trim();
+  if(raw!==""){ const n=parseFloat(raw); if(isNaN(n)||n<0||n>5){ $("#formErr").textContent="평점은 0~5 사이 숫자로 입력하세요."; $("#f_avg").focus(); return; } }
+  $("#formErr").textContent=""; $("#saveBtn").disabled=true;
+  try{
+    if(editingId){
+      const saved=await ds.update(readForm(findEntry(editingId)||{id:editingId}));
+      applyUpdated(saved); toast(`'${name}' 저장했습니다`);
+    }else{
+      const saved=await ds.create(readForm({}));
+      RECORDS.push(saved); toast(`'${name}' 추가했습니다`+(isHidden(saved)?" (숨김 상태)":""));
+    }
+    closeModal(); renderAll();
+  }catch(e){
+    if(isAuthErr(e)){ closeModal(); handleErr(e); }
+    else $("#formErr").textContent="저장 실패: "+failMsg(e);
+  }finally{ $("#saveBtn").disabled=false; }
+}
+
+/* ---------- 가져오기 / 내보내기 ---------- */
+function exportJSON(){
+  const blob=new Blob([JSON.stringify(RECORDS,null,2)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob); a.download="식당목록-전체.json"; a.click(); URL.revokeObjectURL(a.href);
+}
+function importJSON(file){
+  const reader=new FileReader();
+  reader.onload=async ()=>{
+    let list;
+    try{
+      const data=JSON.parse(reader.result);
+      list=Array.isArray(data)?data:(Array.isArray(data.items)?data.items:null);
+      if(!list) throw new Error("목록 배열을 찾을 수 없습니다");
+    }catch(e){ toast("가져오기 실패: "+failMsg(e)); return; }
+    list=list.filter(it=>it && typeof it==="object" && it.name);
+    const byId=new Map(RECORDS.map(r=>[r.id,r]));
+    const upd=list.filter(it=>it.id && byId.has(it.id)).length;
+    if(!confirm(`${list.length}곳을 가져옵니다.\n· 기존 수정 ${upd}곳\n· 신규 추가 ${list.length-upd}곳\n진행할까요?`)) return;
+    let added=0, updated=0;
+    try{
+      toast("가져오는 중…");
+      for(const it of list){
+        if(it.id && byId.has(it.id)){ applyUpdated(await ds.update({...byId.get(it.id), ...it})); updated++; }
+        else { const {id,_t,...rest}=it; RECORDS.push(await ds.create(rest)); added++; }
+      }
+      toast(`가져오기 완료 · 추가 ${added}곳, 수정 ${updated}곳`);
+    }catch(e){ handleErr(e); }
+    renderAll();
+  };
+  reader.readAsText(file);
+}
+
+/* ---------- 이벤트 ---------- */
+$("#loginForm").addEventListener("submit", doLogin);
+$("#logoutBtn").onclick=()=>logout("로그아웃했습니다.");
+$("#q").addEventListener("input",e=>{ st.q=e.target.value; renderList(); });
+$("#statusChips").addEventListener("click",e=>{ const b=e.target.closest("[data-status]"); if(!b) return; st.status=b.dataset.status; renderStatus(); renderList(); });
+$("#areaSel").onchange=e=>{ st.area=e.target.value; renderList(); };
+$("#sortSel").onchange=e=>{ st.sort=e.target.value; renderList(); };
+$("#reloadBtn").onclick=load;
+$("#addBtn").onclick=()=>openModal();
+$("#exportBtn").onclick=exportJSON;
+$("#importBtn").onclick=()=>$("#importFile").click();
+$("#importFile").onchange=e=>{ const f=e.target.files[0]; if(f) importJSON(f); e.target.value=""; };
+$("#list").addEventListener("click",e=>{
+  const b=e.target.closest("[data-act]"); if(!b) return;
+  const id=b.closest(".arow").dataset.id, act=b.dataset.act;
+  if(act==="edit") openModal(id);
+  else if(act==="toggle") toggleHidden(id);
+  else if(act==="del") delEntry(id);
+});
+$("#closeModal").onclick=closeModal;
+$("#cancelBtn").onclick=closeModal;
+$("#saveBtn").onclick=save;
+$("#overlay").onclick=e=>{ if(e.target===$("#overlay")) closeModal(); };
+document.addEventListener("keydown",e=>{ if(e.key==="Escape" && $("#overlay").classList.contains("open")) closeModal(); });
+$("#f_mapdesc").addEventListener("input",updateAreaHint);
+// 식권 종류를 체크하면 '식권 사용 가능'도 자동 체크, 사용 불가로 바꾸면 종류 해제
+["#f_vzero","#f_vsick"].forEach(s=>$(s).addEventListener("change",e=>{ if(e.target.checked) $("#f_vok").checked=true; }));
+$("#f_vok").addEventListener("change",e=>{ if(!e.target.checked){ $("#f_vzero").checked=false; $("#f_vsick").checked=false; } });
+
+/* ---------- 시작 ---------- */
+(async function boot(){
+  $("#modeTag").textContent = ds.needsPassword ? "" : "로컬 모드 (이 브라우저에만 저장)";
+  if(!ds.needsPassword){ await showApp(); return; }         // 로컬 모드는 로그인 없음
+  let saved=null; try{ saved=localStorage.getItem(PW_KEY); }catch(e){}
+  if(saved){
+    try{
+      if(await ds.verifyPassword(saved)){ ds.setPassword(saved); await showApp(); return; }
+    }catch(e){ /* 네트워크 오류 등 → 로그인 화면 */ }
+    try{ localStorage.removeItem(PW_KEY); }catch(e){}
+  }
+  showLogin();
+})();
+</script>
+</body>
+</html>
